@@ -18,8 +18,8 @@
  - For Chaps Payments, if AccountStatus = Disabled -> Success = false
  - For Chaps Payments, if AccountStatus = InboundPaymentsOnly -> Success = false
 ### Persistence Validation
-When Success = true, UpdateAccount is called once with the updated balance (Balance - Amount)
-When Success = false, UpdateAccount is never called.
+ - When Success = true, UpdateAccount is called once with the updated balance (Balance - Amount)
+ - When Success = false, UpdateAccount is never called.
 
 ### Unit tests questioning business logic
 - For Bacs and FasterPayments, even if AccountStatus is not Live -> Success = true
