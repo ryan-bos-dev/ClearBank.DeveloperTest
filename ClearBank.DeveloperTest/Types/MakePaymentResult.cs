@@ -1,7 +1,7 @@
 ﻿namespace ClearBank.DeveloperTest.Types
 {
-    public class MakePaymentResult
+    public class MakePaymentResult(bool success)
     {
-        public bool Success { get; set; }
+        public bool Success => success;
     }
 }
