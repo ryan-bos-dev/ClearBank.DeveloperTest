@@ -1,4 +1,4 @@
-### Refactoring notes: 
+## Refactoring notes: 
 1) Since AccountDataStore and BackupAccountDataStore share method signatures we can abstract these to implement a generic IAccountDataStore.
 2) dataStoreType is an environment-wide setting rather than per user so we can easily move this to the Dependency Injection and inject the appropriate AccountDataStore/BackupAccountDataStore. This will separate the Account logic from the Payment logic and improve code readability and testability.
 3) Add DataStoreType as an Enum to avoid usage of magic strings ("Backup").
@@ -6,30 +6,30 @@
 5) Add None as default AllowedPaymentSchemed Enum.
 6) Move logic for Determining Success of Payment to private method. In the future if this were to become more complex and call external services it would make sense to move this logic to a separate service (i.e PaymentValidator) with it's own unit tests separate to the PaymentService.
 
-### Unit Testing
-Add unit tests for: 
-a) PaymentScheme Validation
+## Unit Testing
+### PaymentScheme Validation
  - request PaymentScheme matches AllowedPaymentScheme (cases for 1, 2, or 3 AllowedPaymentSchemes) -> Succeess = true
  - request PaymentScheme is not contained in AllowedPaymentSchemes -> Success = false 
-b) assuming the PaymentScheme is allowed: 
+### Assuming the PaymentScheme is allowed: 
  - For FasterPayments Payments, if Account Balance > Request Amount -> Success = true
  - For FasterPayments Payments, if Account Balance = Request Amount -> Success = true
  - For FasterPayments Payments, if Account Balance < Request Amount -> Success = false
  - For Chaps Payments, if AccountStatus = Live -> Success = true
  - For Chaps Payments, if AccountStatus = Disabled -> Success = false
  - For Chaps Payments, if AccountStatus = InboundPaymentsOnly -> Success = false
-c) When Success = true, UpdateAccount is called once with the updated balance (Balance - Amount)
+### Persistence Validation
+When Success = true, UpdateAccount is called once with the updated balance (Balance - Amount)
 When Success = false, UpdateAccount is never called.
 
-d) Also add some unit tests for cases that succeed based on existing logic but could question business logic based on them
+### Unit tests questioning business logic
 - For Bacs and FasterPayments, even if AccountStatus is not Live -> Success = true
 - For Bacs or Chaps, even if Balance < Amount -> Success = true
 
-e) DependencyInjection 
+### DependencyInjection tests
 - Given Config DataStoreType = Backup/Primary (case-insensitive) appropriate AccountDataStore is registered
 - Given other Configs or null -> throws InvalidOperationException.
 
-### Out of Scope/Future Improvements:
+## Out of Scope/Future Improvements:
 
 - Include Failure Reason in MakePaymentResult and return as appropriate InsufficientFunds/AccountNotLive/SchemeNotAllowed.
 - Guard against double-spend.
